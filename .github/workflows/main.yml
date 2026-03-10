@@ -13,10 +13,8 @@ jobs:
           distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-      - name: Copy SDL Java sources
-        run: |
-          cp -r 3rdparty/SDL/SDL/android-project/app/src/main/java/org \
-          android/app/src/main/java/
+      - name: Find SDL
+        run: find . -name "SDLActivity.java" 2>/dev/null
       - name: Build APK
         run: cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
