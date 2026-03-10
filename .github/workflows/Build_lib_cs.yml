@@ -4,29 +4,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone hlsdk-portable
-        run: |
-          git clone https://github.com/FWGS/hlsdk-portable
-          cd hlsdk-portable
-          git submodule update --init --recursive
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Build libcs.so
         run: |
-          cd hlsdk-portable
           NDK_PATH=$ANDROID_SDK_ROOT/ndk/$(ls $ANDROID_SDK_ROOT/ndk | head -1)
           mkdir build && cd build
           cmake .. \
             -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-21 \
-            -DGAME_DIR=cstrike
+            -DGAME_DIR=cstrike \
+            -DBUILD_CLIENT=ON \
+            -DBUILD_SERVER=ON
           make -j$(nproc)
+          find . -name "*.so" 2>/dev/null
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcs
-          path: hlsdk-portable/build/cstrike/dlls/libcs.so
-
+          path: build/**/*.so
