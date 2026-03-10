@@ -23,8 +23,3 @@ jobs:
         with:
           name: cs-libs-arm64
           path: build-arm64/**/*.so
-```
-
-Скачаешь артефакт → внутри будет `libcs_android_arm64.so` → кидаешь в:
-```
-/sdcard/xash3d/cstrike/dlls/
