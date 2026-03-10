@@ -6,13 +6,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          repository: FWGS/xash3d-fwgs
           submodules: recursive
+          fetch-depth: 0
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Init submodules
+        run: git submodule update --init --recursive
       - name: Build APK
         run: cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
