@@ -14,9 +14,16 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Init submodules
+        run: git submodule update --init --recursive
+      - name: Clone SDL
         run: |
-          git submodule update --init --recursive
-          find . -name "SDLActivity.java" 2>/dev/null
+          git clone https://github.com/libsdl-org/SDL.git 3rdparty/SDL
+          cd 3rdparty/SDL
+          git checkout SDL2
+      - name: Copy SDL Java
+        run: |
+          cp -r 3rdparty/SDL/android-project/app/src/main/java/org \
+          android/app/src/main/java/
       - name: Build APK
         run: cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
