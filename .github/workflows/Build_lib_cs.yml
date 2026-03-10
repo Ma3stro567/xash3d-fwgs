@@ -4,16 +4,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Clone hlsdk-portable
+        run: |
+          git clone https://github.com/FWGS/hlsdk-portable
+          cd hlsdk-portable
+          git submodule update --init --recursive
 
       - name: Build libcs.so
         run: |
           NDK_PATH=$ANDROID_SDK_ROOT/ndk/$(ls $ANDROID_SDK_ROOT/ndk | head -1)
+          cd hlsdk-portable
           mkdir build && cd build
           cmake .. \
             -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
@@ -23,9 +26,9 @@ jobs:
             -DBUILD_CLIENT=ON \
             -DBUILD_SERVER=ON
           make -j$(nproc)
-          find . -name "*.so" 2>/dev/null
+          find . -name "*.so"
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcs
-          path: build/**/*.so
+          path: hlsdk-portable/build/**/*.so
